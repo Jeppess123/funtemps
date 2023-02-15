@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/Jeppess123/funtemps/conv"
 )
@@ -63,7 +64,7 @@ func main() {
 
 	if out == "C" && isFlagPassed("F") {
 		cel := conv.FarhenheitToCelsius(fahr)
-		fmt.Printf("%.2f°F is %.2f°C\n", fahr, cel)
+		fmt.Printf("%.0f°F is %s°C\n", fahr, formatNumber(cel))
 	}
 
 	if out == "F" && isFlagPassed("C") {
@@ -91,7 +92,7 @@ func main() {
 		fmt.Printf("%.2f°F is %.2f°K\n", fahr, kel)
 	}
 
-	if funfacts == "sun" {
+	/*if funfacts == "sun" {
 		fmt.Println("The Sun is the star at the center of the Solar System. It is a nearly perfect spherical ball of hot plasma, with internal convective motion that generates a magnetic field via a dynamo process. It is by far the most important source of energy for life on Earth.")
 	}
 
@@ -108,7 +109,38 @@ func main() {
 		// skal returnere °C
 		fmt.Println("0°F er -17.78°C")
 	}
+	*/
+}
 
+func formatNumber(number float64) string {
+	numStr := fmt.Sprintf("%.2f", number)
+	numParts := strings.Split(numStr, ".")
+	intPart := numParts[0]
+	intPartLen := len(intPart)
+
+	if intPartLen <= 3 {
+		return numStr
+	}
+
+	start := intPartLen % 3
+	if start == 0 {
+		start = 3
+	}
+
+	var result string
+	for i, digit := range intPart {
+		if i == start {
+			result += " "
+			start += 3
+		}
+		result += string(digit)
+	}
+
+	if len(numParts[1]) == 0 {
+		return result
+	}
+
+	return result + "." + numParts[1]
 }
 
 // Funksjonen sjekker om flagget er spesifisert på kommandolinje
