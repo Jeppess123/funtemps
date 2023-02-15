@@ -3,32 +3,33 @@ package main
 import (
 	"flag"
 	"fmt"
+
+	"github.com/Jeppess123/funtemps/conv"
 )
 
 // Definerer flag-variablene i hoved-"scope"
 var fahr float64
 var out string
 var funfacts string
+var cel float64
+var kel float64
 
 // Bruker init (som anbefalt i dokumentasjonen) for å sikre at flagvariablene
 // er initialisert.
+
+/*
+   Her er eksempler på hvordan man implementerer parsing av flagg.
+   For eksempel, kommando
+       funtemps -F 0 -out C
+   skal returnere output: 0°F er -17.78°C
+*/
+
 func init() {
-
-	/*
-	   Her er eksempler på hvordan man implementerer parsing av flagg.
-	   For eksempel, kommando
-	       funtemps -F 0 -out C
-	   skal returnere output: 0°F er -17.78°C
-	*/
-
-	// Definerer og initialiserer flagg-variablene
-	flag.Float64Var(&fahr, "F", 0.0, "temperatur i grader fahrenheit")
-	// Du må selv definere flag-variablene for "C" og "K"
-	flag.StringVar(&out, "out", "C", "beregne temperatur i C - celsius, F - farhenheit, K- Kelvin")
-	flag.StringVar(&funfacts, "funfacts", "sun", "\"fun-facts\" om sun - Solen, luna - Månen og terra - Jorden")
-	// Du må selv definere flag-variabelen for -t flagget, som bestemmer
-	// hvilken temperaturskala skal brukes når funfacts skal vises
-
+	flag.Float64Var(&fahr, "F", 0.0, "temperature in degrees Fahrenheit")
+	flag.StringVar(&out, "out", "C", "calculate temperature in C - Celsius, F - Fahrenheit, K - Kelvin")
+	// flag.StringVar(&funfacts, "funfacts", "sun", ""fun-facts" about sun - The Sun, luna - The Moon, and terra - The Earth")
+	flag.Float64Var(&kel, "K", 0.0, "temperature in degrees Kelvin")
+	flag.Float64Var(&cel, "C", 0.0, "temperature in degrees Celsius")
 }
 
 func main() {
@@ -59,6 +60,41 @@ func main() {
 	*/
 
 	// Her er noen eksempler du kan bruke i den manuelle testingen
+
+	if out == "C" && isFlagPassed("F") {
+		cel := conv.FarhenheitToCelsius(fahr)
+		fmt.Printf("%.2f°F is %.2f°C\n", fahr, cel)
+	}
+
+	if out == "F" && isFlagPassed("C") {
+		fahr := conv.CelsiusToFahrenheit(cel)
+		fmt.Printf("%.2f°C is %.2f°F\n", cel, fahr)
+	}
+
+	if out == "K" && isFlagPassed("C") {
+		kel := conv.CelsiusToKelvin(cel)
+		fmt.Printf("%.2f°C is %.2f°K\n", cel, kel)
+	}
+
+	if out == "C" && isFlagPassed("K") {
+		cel := conv.KelvinToCelsius(kel)
+		fmt.Printf("%.2f°K is %.2f°C\n", kel, cel)
+	}
+
+	if out == "F" && isFlagPassed("K") {
+		fahr := conv.KelvinToFarhenheit(kel)
+		fmt.Printf("%.2f°K is %.2f°F\n", kel, fahr)
+	}
+
+	if out == "K" && isFlagPassed("F") {
+		kel := conv.FahrenheitToKelvin(fahr)
+		fmt.Printf("%.2f°F is %.2f°K\n", fahr, kel)
+	}
+
+	if funfacts == "sun" {
+		fmt.Println("The Sun is the star at the center of the Solar System. It is a nearly perfect spherical ball of hot plasma, with internal convective motion that generates a magnetic field via a dynamo process. It is by far the most important source of energy for life on Earth.")
+	}
+
 	fmt.Println(fahr, out, funfacts)
 
 	fmt.Println("len(flag.Args())", len(flag.Args()))
